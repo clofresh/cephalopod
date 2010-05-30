@@ -8,7 +8,7 @@ framework 'Cocoa'
 require 'dispatch'
 
 class Service
-  attr_reader :started
+  attr_reader :name
 
   def initialize(name, script, args = [])
     @name = name
@@ -18,27 +18,31 @@ class Service
     @stdout = nil
     @stderr = nil
     
-    @started = false
+    @task = nil
   end
   
   def to_s
     @name
   end
+  
+  def started
+    @task && @task.isRunning
+  end
 
   def start(queue, view_writer)
-    if not @started
+    if not started
       @started = true
       @stdout = NSPipe.pipe
       @stderr = NSPipe.pipe
 
-      task = NSTask.new
+      @task = NSTask.new
       stdout_file = IO.new(@stdout.fileHandleForReading.fileDescriptor, 'r')
       stderr_file = IO.new(@stderr.fileHandleForReading.fileDescriptor, 'r')
 
-      task.setStandardOutput @stdout
-      task.setStandardError @stderr
-      task.setLaunchPath @script
-      task.setArguments @args
+      @task.setStandardOutput @stdout
+      @task.setStandardError @stderr
+      @task.setLaunchPath @script
+      @task.setArguments @args
 
       Dispatch::Source.read(stdout_file, queue) do |s|
         if s.data > 0
@@ -60,10 +64,16 @@ class Service
       end
 
       Dispatch::Job.new do
-        task.launch
-        task.waitUntilExit
+        @task.launch
+        @task.waitUntilExit
         @started = false
       end
+    end
+  end
+  
+  def stop
+    if started
+      @task.terminate
     end
   end
 end
@@ -93,6 +103,20 @@ class Cephalopod
     @services = []
     @servicesView.dataSource = self
     @view_writer = Dispatch::Job.new().synchronize(ViewWriter.new(@logOutputView))
+    
+    NSNotificationCenter.defaultCenter.addObserver(self, 
+      selector: :application_will_terminate, 
+      name: NSApplicationWillTerminateNotification, 
+      object:nil
+    )
+
+  end
+  
+  def application_will_terminate
+    @services.each do |service|
+      NSLog("Stopping #{service.name}")
+      service.stop
+    end
   end
   
   def appendText(text)
@@ -128,20 +152,22 @@ class Cephalopod
     end
   end
 
-  def startService(sender)
+  def toggleService(sender)
     row_index = @servicesView.selectedRow
     
     if row_index > -1 or true then
-      NSLog('start service')
-
-      @services[row_index].start @queue, @view_writer
+      service = @services[row_index]
+      
+      if service.started
+        NSLog('stop service')
+        service.stop
+      else
+        NSLog('start service')
+        service.start @queue, @view_writer
+      end
     end
   end
-
-  def stopService(sender)
-    NSLog('stop service')
-  end
-
+  
   def restartService(sender)
     NSLog('restart service')
   end

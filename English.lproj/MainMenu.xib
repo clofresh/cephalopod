@@ -21,8 +21,8 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="458"/>
 			<integer value="29"/>
+			<integer value="458"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1607,14 +1607,6 @@
 					<int key="connectionID">483</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">startService:</string>
-						<reference key="source" ref="304823112"/>
-						<reference key="destination" ref="321637360"/>
-					</object>
-					<int key="connectionID">484</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">servicesView</string>
 						<reference key="source" ref="304823112"/>
@@ -1629,6 +1621,14 @@
 						<reference key="destination" ref="175969991"/>
 					</object>
 					<int key="connectionID">501</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleService:</string>
+						<reference key="source" ref="304823112"/>
+						<reference key="destination" ref="321637360"/>
+					</object>
+					<int key="connectionID">502</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2856,7 +2856,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">501</int>
+			<int key="maxID">502</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2871,12 +2871,10 @@
 							<string>addService:</string>
 							<string>deleteService:</string>
 							<string>restartService:</string>
-							<string>startService:</string>
-							<string>stopService:</string>
+							<string>toggleService:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
