@@ -944,7 +944,7 @@
 															</object>
 															<double key="NSIntercellSpacingWidth">3</double>
 															<double key="NSIntercellSpacingHeight">2</double>
-															<object class="NSColor" key="NSBackgroundColor" id="416396795">
+															<object class="NSColor" key="NSBackgroundColor" id="855768402">
 																<int key="NSColorSpace">1</int>
 																<bytes key="NSRGB">MC44NjY2NjY2NjY3IDAuODk0MTE3NjQ3MSAwLjkyMTU2ODYyNzUAA</bytes>
 															</object>
@@ -972,7 +972,7 @@
 													<reference key="NSSuperview" ref="734595057"/>
 													<reference key="NSNextKeyView" ref="854160098"/>
 													<reference key="NSDocView" ref="854160098"/>
-													<reference key="NSBGColor" ref="416396795"/>
+													<reference key="NSBGColor" ref="855768402"/>
 													<int key="NScvFlags">4</int>
 												</object>
 												<object class="NSScroller" id="570295359">
@@ -1263,7 +1263,7 @@
 				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
 				<string key="NSMaxSize">{1.79769e+308, 1.79769e+308}</string>
 			</object>
-			<object class="NSCustomObject" id="452141070">
+			<object class="NSCustomObject" id="158725495">
 				<string key="NSClassName">Cephalopod</string>
 			</object>
 		</object>
@@ -1585,7 +1585,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">addService:</string>
-						<reference key="source" ref="452141070"/>
+						<reference key="source" ref="158725495"/>
 						<reference key="destination" ref="897238984"/>
 					</object>
 					<int key="connectionID">481</int>
@@ -1593,7 +1593,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">deleteService:</string>
-						<reference key="source" ref="452141070"/>
+						<reference key="source" ref="158725495"/>
 						<reference key="destination" ref="196097796"/>
 					</object>
 					<int key="connectionID">482</int>
@@ -1601,7 +1601,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">restartService:</string>
-						<reference key="source" ref="452141070"/>
+						<reference key="source" ref="158725495"/>
 						<reference key="destination" ref="913222051"/>
 					</object>
 					<int key="connectionID">483</int>
@@ -1609,10 +1609,18 @@
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">startService:</string>
-						<reference key="source" ref="452141070"/>
+						<reference key="source" ref="158725495"/>
 						<reference key="destination" ref="321637360"/>
 					</object>
 					<int key="connectionID">484</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">servicesView</string>
+						<reference key="source" ref="158725495"/>
+						<reference key="destination" ref="854160098"/>
+					</object>
+					<int key="connectionID">485</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2406,7 +2414,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">480</int>
-						<reference key="object" ref="452141070"/>
+						<reference key="object" ref="158725495"/>
 						<reference key="parent" ref="0"/>
 					</object>
 				</object>
@@ -2842,7 +2850,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">484</int>
+			<int key="maxID">485</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
