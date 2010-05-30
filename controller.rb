@@ -27,6 +27,15 @@ class Cephalopod
     @servicesView.dataSource = self
   end
   
+  def appendText(text)
+    endRange = NSRange.new
+    endRange.location = @logOutputView.textStorage.length
+    endRange.length = 0
+    @logOutputView.replaceCharactersInRange(endRange, withString:text)
+    endRange.length = output.length
+    @logOutputView.scrollRangeToVisible(endRange)
+  end
+  
   # servicesView protocol implementation
   
   def numberOfRowsInTableView(view)
@@ -61,19 +70,40 @@ class Cephalopod
     
     if row_index > -1 or true then
       NSLog('start service')
-      file = File.open('/tmp/input.log')
-      
-      Dispatch::Source.read(file, @queue) do |s|
-        data = file.read(s.data)
-        
-        endRange = NSRange.new
-        endRange.location = @logOutputView.textStorage.length
-        endRange.length = 0
-        @logOutputView.replaceCharactersInRange(endRange, withString:data)
-        endRange.length = data.length
-        @logOutputView.scrollRangeToVisible(endRange)
-        NSLog("Got data: #{data}")
+
+      stdout = NSPipe.pipe
+      stderr = NSPipe.pipe
+
+      task = NSTask.new
+      stdout_file = IO.new(stdout.fileHandleForReading.fileDescriptor, 'r')
+      stderr_file = IO.new(stderr.fileHandleForReading.fileDescriptor, 'r')
+
+      task.setStandardOutput stdout
+      task.setStandardError stderr
+      task.setLaunchPath '/usr/local/bin/memcached'
+      task.setArguments ['-vvv', '-p 22122']
+
+      Dispatch::Source.read(stdout_file, @queue) do |s|
+        if s.data > 0
+          output = stdout_file.read s.data
+          NSLog("Got stdout: #{output}")
+          appendText output
+        end
       end
+
+      Dispatch::Source.read(stderr_file, @queue) do |s|
+        if s.data > 0
+          output = stderr_file.read s.data
+          NSLog("Got stderr: #{output}")
+
+          appendText output
+        end
+      end
+
+      Dispatch::Job.new do
+        task.launch
+      end
+
     end
   end
 
