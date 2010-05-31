@@ -23,6 +23,10 @@ module Service
       @name
     end
     
+    def hash
+      to_s.intern
+    end
+    
     def started
       @task && @task.isRunning
     end
@@ -45,7 +49,6 @@ module Service
         Dispatch::Source.read(stdout_file, queue) do |s|
           if s.data > 0
             output = stdout_file.read s.data
-            NSLog("Got stdout: #{output}")
             view_writer.write output
             sleep 0.25
           end
@@ -54,7 +57,6 @@ module Service
         Dispatch::Source.read(stderr_file, queue) do |s|
           if s.data > 0
             output = stderr_file.read s.data
-            NSLog("Got stderr: #{output}")
 
             view_writer.write output
             sleep 0.25
@@ -78,7 +80,8 @@ module Service
 
   class ServiceManager
     def initialize()
-      @services = []
+      @services = {}
+      @service_indexes = []
     end
     
     # data source methods
@@ -87,31 +90,31 @@ module Service
     end
 
     def tableView(view, objectValueForTableColumn:column, row:index)
-      @services[index].to_s
+      at_index(index).to_s
     end
     
     # action methods
     
     def add(service)
-      @services << service
+      key = service.hash
+      @services[key] = service
+      @service_indexes << key
     end
     
     def delete(service)
-      @services.delete service
+      @services.delete service.hash
+    end
+    
+    def at_index(i)
+      @services[@service_indexes[i]]
     end
     
     def selected_service(view)
-      row_index = view.selectedRow
-      
-      if row_index > -1 then
-        @services[row_index]
-      else
-        nil
-      end
+      at_index view.selectedRow
     end
     
     def stop
-      @services.each do |service|
+      @services.each_value do |service|
         NSLog("Stopping #{service.name}")
         service.stop
       end
