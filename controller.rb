@@ -25,7 +25,7 @@ class ViewWriter
 end
 
 class Cephalopod
-  attr_writer :servicesView, :logOutputView
+  attr_writer :servicesView, :logOutputView, :addServicePanel, :newServiceName, :newServiceScript
   
   def awakeFromNib
     @queue = Dispatch::Queue.new 'com.cephalopodapp.services'
@@ -53,9 +53,30 @@ class Cephalopod
   # Actions
   
   def addService(sender)
-    service = Service::Service.new 'Test service', '/usr/local/bin/memcached', ['-p22122', '-vv']
+    NSApplication.sharedApplication.runModalForWindow @addServicePanel
+  end
+  
+  def saveNewService(sender)
+    service_name = @newServiceName.stringValue
+    service_script = @newServiceScript.stringValue
+    service_args = []
+    
+    service = Service::Service.new service_name, service_script, service_args
     @service_manager.add service
     @servicesView.reloadData
+    @addServicePanel.orderOut nil
+    NSApplication.sharedApplication.stopModal
+
+    @newServiceName.setStringValue ''
+    @newServiceScript.setStringValue ''
+  end
+
+  def cancelNewService(sender)
+    @addServicePanel.orderOut nil
+    NSApplication.sharedApplication.stopModal
+
+    @newServiceName.setStringValue ''
+    @newServiceScript.setStringValue ''
   end
 
   def deleteService(sender)
