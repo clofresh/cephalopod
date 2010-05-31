@@ -7,7 +7,6 @@
 framework 'Cocoa'
 require 'dispatch'
 require 'service'
-include Service
 
 class ViewWriter
   def initialize(view)
@@ -31,8 +30,8 @@ class Cephalopod
   def awakeFromNib
     @queue = Dispatch::Queue.new 'com.cephalopodapp.services'
     @incoming_text_queue = Dispatch::Queue.new 'com.cephalopodapp.incoming'
-    @services = []
-    @servicesView.dataSource = self
+    @service_manager = Service::ServiceManager.new
+    @servicesView.dataSource = @service_manager
     @view_writer = Dispatch::Job.new().synchronize(ViewWriter.new(@logOutputView))
     
     NSNotificationCenter.defaultCenter.addObserver(self, 
@@ -44,51 +43,31 @@ class Cephalopod
   end
   
   def application_will_terminate
-    @services.each do |service|
-      NSLog("Stopping #{service.name}")
-      service.stop
-    end
+    @service_manager.stop
   end
   
   def appendText(text)
     @view_writer.write text
   end
   
-  # servicesView protocol implementation
-  
-  def numberOfRowsInTableView(view)
-    @services.size
-  end
-
-  def tableView(view, objectValueForTableColumn:column, row:index)
-    @services[index].to_s
-  end  
-  
   # Actions
   
   def addService(sender)
-    NSLog('add service')
-    service = Service.new 'Test service', '/usr/local/bin/memcached', ['-p22122', '-vv']
-    @services << service
+    service = Service::Service.new 'Test service', '/usr/local/bin/memcached', ['-p22122', '-vv']
+    @service_manager.add service
     @servicesView.reloadData
   end
 
   def deleteService(sender)
-    row_index = @servicesView.selectedRow
-    
-    if row_index > -1 then
-      NSLog('delete service')
-      @services.delete_at row_index
-      @servicesView.reloadData
-    end
+    to_delete = @service_manager.selected_service @servicesView
+    @service_manager.delete to_delete
+    @servicesView.reloadData
   end
 
   def toggleService(sender)
-    row_index = @servicesView.selectedRow
+    service = @service_manager.selected_service @servicesView
     
-    if row_index > -1 or true then
-      service = @services[row_index]
-      
+    if service then
       if service.started
         NSLog('stop service')
         service.stop

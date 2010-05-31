@@ -4,7 +4,6 @@
 # Created by Carlo Cabanilla on 5/30/10.
 # Copyright 2010 Carlo Cabanilla. All rights reserved.
 
-
 module Service
   class Service
     attr_reader :name
@@ -76,4 +75,47 @@ module Service
       end
     end
   end
+
+  class ServiceManager
+    def initialize()
+      @services = []
+    end
+    
+    # data source methods
+    def numberOfRowsInTableView(view)
+      @services.size
+    end
+
+    def tableView(view, objectValueForTableColumn:column, row:index)
+      @services[index].to_s
+    end
+    
+    # action methods
+    
+    def add(service)
+      @services << service
+    end
+    
+    def delete(service)
+      @services.delete service
+    end
+    
+    def selected_service(view)
+      row_index = view.selectedRow
+      
+      if row_index > -1 then
+        @services[row_index]
+      else
+        nil
+      end
+    end
+    
+    def stop
+      @services.each do |service|
+        NSLog("Stopping #{service.name}")
+        service.stop
+      end
+    end
+  end
+
 end
